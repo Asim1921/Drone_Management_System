@@ -27,7 +27,7 @@ export default function ParticleBackground({ className = '' }: ParticleBackgroun
       }
 
       // Load particles.js script
-      const existingScript = document.querySelector('script[src="/particles.js-master/particles.min.js"]');
+      const existingScript = document.querySelector('script[src="/particles.js-master/particles.js"]') || document.querySelector('script[src*="particles.js"]');
       if (existingScript) {
         // Script already exists, wait for it to load
         const checkInterval = setInterval(() => {
@@ -40,13 +40,24 @@ export default function ParticleBackground({ className = '' }: ParticleBackgroun
       }
 
       const script = document.createElement('script');
-      script.src = '/particles.js-master/particles.min.js';
+      // Use CDN as fallback, or use the local file if available
+      script.src = '/particles.js-master/particles.js';
       script.async = true;
       script.onload = () => {
         setTimeout(initializeParticles, 100);
       };
       script.onerror = () => {
-        console.error('Failed to load particles.js from /particles.js-master/particles.min.js');
+        // Fallback to CDN if local file fails
+        const cdnScript = document.createElement('script');
+        cdnScript.src = 'https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js';
+        cdnScript.async = true;
+        cdnScript.onload = () => {
+          setTimeout(initializeParticles, 100);
+        };
+        cdnScript.onerror = () => {
+          console.error('Failed to load particles.js from both local and CDN sources');
+        };
+        document.body.appendChild(cdnScript);
       };
       document.body.appendChild(script);
     };

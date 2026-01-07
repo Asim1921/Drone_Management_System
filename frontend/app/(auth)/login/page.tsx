@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Input } from '../../../components/ui/Input';
@@ -10,6 +10,17 @@ import ParticleBackground from '../../../components/ParticleBackground';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  useEffect(() => {
+    // Hide scrollbars on body and html
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      // Restore scrollbars when component unmounts
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -40,7 +51,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-black">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-black scrollbar-hide">
       {/* Particle Background */}
       <div className="absolute inset-0 z-[5]">
         <ParticleBackground />
@@ -62,29 +73,15 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Dark Overlay with Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-black/75 to-black/85 z-20"></div>
+      {/* Completely Black Overlay */}
+      <div className="absolute inset-0 bg-black z-20"></div>
 
       {/* Main Content - Single Unified Card */}
       <div className="relative z-30 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-gradient-to-br from-gray-900/95 via-gray-800/90 to-gray-900/95 backdrop-blur-3xl border-2 border-[#3b82f6]/40 rounded-3xl shadow-2xl shadow-black/70 overflow-hidden">
-          {/* Animated Top Border */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-[#3b82f6] to-transparent"></div>
-          
-          {/* Glowing Corner Accents */}
-          <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-[#3b82f6]/20 to-transparent rounded-br-full blur-2xl"></div>
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-[#3b82f6]/20 to-transparent rounded-tl-full blur-2xl"></div>
-
+        <div className="overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
             {/* Left Side - Branding Section */}
-            <div className="relative bg-gradient-to-br from-black/60 via-gray-900/50 to-black/60 p-8 sm:p-10 lg:p-12 border-r-2 border-[#3b82f6]/20 lg:border-r lg:border-b-0 border-b-2 lg:border-b-0">
-              {/* Decorative Pattern Overlay */}
-              <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0" style={{
-                  backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)',
-                  backgroundSize: '40px 40px'
-                }}></div>
-              </div>
+            <div className="relative p-8 sm:p-10 lg:p-12">
 
               <div className="relative z-10 text-center lg:text-left space-y-6">
                 <div>
@@ -115,46 +112,21 @@ export default function LoginPage() {
 
                 {/* Drone GIF */}
                 <div className="pt-6 flex justify-center lg:justify-start">
-                  <div className="relative group">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-[#3b82f6] to-[#2d5a8f] rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition duration-300"></div>
-                    <div className="relative bg-black/40 rounded-xl p-3 backdrop-blur-sm border border-[#3b82f6]/30">
-                      <img 
-                        src="/img/drone.gif" 
-                        alt="Drone Animation" 
-                        className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 object-contain rounded-lg"
-                      />
-                    </div>
+                  <div className="relative">
+                    <img 
+                      src="/img/drone.gif" 
+                      alt="Drone Animation" 
+                      className="w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 object-contain"
+                      style={{ mixBlendMode: 'screen' }}
+                    />
                   </div>
                 </div>
 
-                {/* Feature Points */}
-                <div className="pt-6 lg:pt-8 space-y-3">
-                  <div className="flex items-center gap-3 text-gray-300 justify-center lg:justify-start">
-                    <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-sm shadow-[#3b82f6]/50"></div>
-                    <span className="text-sm uppercase tracking-wide">Real-time Monitoring</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-300 justify-center lg:justify-start">
-                    <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-sm shadow-[#3b82f6]/50"></div>
-                    <span className="text-sm uppercase tracking-wide">Secure Authentication</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-300 justify-center lg:justify-start">
-                    <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-sm shadow-[#3b82f6]/50"></div>
-                    <span className="text-sm uppercase tracking-wide">Comprehensive Management</span>
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="relative p-8 sm:p-10 lg:p-12 bg-gradient-to-br from-gray-900/80 to-black/60">
-              {/* Subtle Pattern Overlay */}
-              <div className="absolute inset-0 opacity-5">
-                <div className="absolute inset-0" style={{
-                  backgroundImage: 'linear-gradient(45deg, #3b82f6 1px, transparent 1px), linear-gradient(-45deg, #3b82f6 1px, transparent 1px)',
-                  backgroundSize: '20px 20px'
-                }}></div>
-              </div>
-
+            <div className="relative p-8 sm:p-10 lg:p-12">
               <div className="relative z-10">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl sm:text-4xl font-bold text-[#3b82f6] uppercase tracking-wider mb-3">
