@@ -18,7 +18,12 @@ A comprehensive web portal for managing drone registration, licensing, and opera
 - License Registration Module
 - Operator/Pilot Registration Module
 - Vendor/Manufacturer Registration Module
+- **Flight Scheduling System** - Operators can schedule flights with Google Maps integration
+- **License Flip Card** - Interactive 3D flip card displaying license information and drone details
+- **QR Code Integration** - Scannable QR codes on licenses containing complete license data
 - Dashboard with role-based views
+- Google Maps integration for flight location selection and visualization
+- Real-time flight status tracking
 
 ## User Roles
 
@@ -75,7 +80,10 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number_here
 **Frontend** (`frontend/.env.local`):
 ```
 NEXT_PUBLIC_API_URL=http://localhost:5050/api
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 ```
+
+**Note:** For flight scheduling features, you'll need a Google Maps API key. Add it to `frontend/.env.local`.
 
 4. Start MongoDB (if running locally):
 ```bash
@@ -99,6 +107,7 @@ This will create:
 - 50+ drone models
 - 10+ operators with training records
 - 23+ licenses (individual, commercial, government)
+- 24+ flight records with various statuses (pending, approved, in_progress, completed, rejected)
 
 **Test Credentials:**
 - Email: `admin@dms.gov.pk` | Password: `password123`
@@ -205,6 +214,14 @@ KeyRex/
 - `POST /api/vendors/:id/models` - Register drone model
 - `GET /api/vendors/:id/models` - List vendor models
 
+### Flights
+- `POST /api/flights` - Schedule a new flight (Operator only)
+- `GET /api/flights` - List flights (filtered by role)
+- `GET /api/flights/:id` - Get flight details
+- `PUT /api/flights/:id/approve` - Approve flight (CAA Officer/Admin)
+- `PUT /api/flights/:id/reject` - Reject flight with reason (CAA Officer/Admin)
+- `PUT /api/flights/:id/status` - Update flight status (Operator only)
+
 ## Development
 
 The project uses:
@@ -212,6 +229,9 @@ The project uses:
 - **TanStack Query** for server state management
 - **Axios** for API communication
 - **date-fns** for date formatting
+- **Google Maps API** for flight location selection and visualization
+- **qrcode.react** for generating scannable QR codes
+- **particles.js** for animated backgrounds
 
 ## License
 

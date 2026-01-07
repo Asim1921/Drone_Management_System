@@ -9,6 +9,25 @@ import { Button } from '../../../components/ui/Button';
 import TiltedCard from '../../../components/TiltedCard';
 import { format } from 'date-fns';
 
+// Operator Drone GIF Component
+const OperatorDroneView = () => {
+  return (
+    <div className="relative flex-shrink-0 w-full lg:w-auto flex justify-center">
+      <div className="relative bg-black">
+        <div className="relative z-10">
+          <img
+            src="/img/Op_Drone.gif"
+            alt="Operator Drone"
+            className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] object-contain"
+            draggable="false"
+            style={{ userSelect: 'none', pointerEvents: 'none' }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // 3D Drone GIF Component
 const Drone3DView = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,40 +67,17 @@ const Drone3DView = () => {
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Glow Effect */}
-        <div className="absolute -inset-4 bg-gradient-to-r from-[#3b82f6]/30 via-[#2d5a8f]/30 to-[#3b82f6]/30 rounded-2xl blur-2xl opacity-50 animate-pulse"></div>
-        
         {/* Main Container */}
-        <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 backdrop-blur-xl border-2 border-[#3b82f6]/40 rounded-2xl p-8 sm:p-10 lg:p-12 shadow-2xl shadow-[#3b82f6]/20">
-          {/* Animated Border Glow */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#3b82f6]/20 via-[#2d5a8f]/20 to-[#3b82f6]/20 opacity-50 animate-pulse"></div>
-          
+        <div className="relative bg-black">
           {/* GIF Container */}
           <div className="relative z-10">
             <img
               src="/img/gif.gif"
               alt="Drone 3D Animation"
-              className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] object-contain drop-shadow-2xl"
-              style={{
-                filter: 'drop-shadow(0 0 30px rgba(59, 130, 246, 0.6))',
-              }}
+              className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 xl:w-[28rem] xl:h-[28rem] object-contain"
+              draggable="false"
+              style={{ userSelect: 'none', pointerEvents: 'none' }}
             />
-          </div>
-          
-          {/* Floating Particles Effect */}
-          <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-2 h-2 bg-[#3b82f6] rounded-full opacity-60 animate-pulse"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${i * 0.3}s`,
-                  animationDuration: `${2 + Math.random() * 2}s`,
-                }}
-              ></div>
-            ))}
           </div>
         </div>
       </div>
@@ -134,13 +130,7 @@ export default function DashboardPage() {
         return (
           <>
             {/* Hero Section */}
-            <div className="relative mb-12 overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900/95 via-gray-800/90 to-gray-900/95 backdrop-blur-xl border-2 border-[#3b82f6]/30">
-              {/* Dotted Pattern Overlay */}
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)',
-                backgroundSize: '40px 40px',
-                opacity: 0.15
-              }}></div>
+            <div className="relative mb-12 overflow-hidden rounded-2xl bg-black">
               <div className="relative z-10 p-8 sm:p-12 lg:p-16">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                   <div className="max-w-2xl flex-1 text-center lg:text-left">
@@ -334,36 +324,35 @@ export default function DashboardPage() {
         return (
           <>
             {/* Hero Section */}
-            <div className="relative mb-12 overflow-hidden rounded-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-gray-900/80 to-black/90"></div>
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)',
-                backgroundSize: '40px 40px',
-                opacity: 0.1
-              }}></div>
+            <div className="relative mb-12 overflow-hidden rounded-2xl bg-black">
               <div className="relative z-10 p-8 sm:p-12 lg:p-16">
-                <div className="max-w-4xl">
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-4 leading-tight">
-                    OPERATOR DASHBOARD
-                  </h1>
-                  <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-2xl">
-                    Manage your drone licenses and flight operations with regulatory compliance.
-                  </p>
-                  <p className="text-base text-gray-400 mb-8 max-w-2xl">
-                    Streamline your drone operations with our all-in-one software ecosystem, ensuring regulatory compliance and operational efficiency.
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <Link href="/licenses/new">
-                      <Button className="border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
-                        Apply for New License
-                      </Button>
-                    </Link>
-                    <Link href="/licenses">
-                      <Button variant="outline" className="border-2 border-[#8b9a4f] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-black transition-all duration-300">
-                        View All Licenses
-                      </Button>
-                    </Link>
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+                  <div className="max-w-2xl flex-1 text-center lg:text-left">
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-4 leading-tight">
+                      OPERATOR DASHBOARD
+                    </h1>
+                    <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-2xl mx-auto lg:mx-0">
+                      Manage your drone licenses and flight operations with regulatory compliance.
+                    </p>
+                    <p className="text-base text-gray-400 mb-8 max-w-2xl mx-auto lg:mx-0">
+                      Streamline your drone operations with our all-in-one software ecosystem, ensuring regulatory compliance and operational efficiency.
+                    </p>
+                    <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                      <Link href="/licenses/new">
+                        <Button className="border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
+                          Apply for New License
+                        </Button>
+                      </Link>
+                      <Link href="/licenses">
+                        <Button variant="outline" className="border-2 border-[#8b9a4f] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-black transition-all duration-300">
+                          View All Licenses
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
+                  
+                  {/* Operator Drone GIF */}
+                  <OperatorDroneView />
                 </div>
               </div>
             </div>
@@ -453,31 +442,30 @@ export default function DashboardPage() {
         return (
           <>
             {/* Hero Section */}
-            <div className="relative mb-12 overflow-hidden rounded-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-gray-900/80 to-black/90"></div>
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)',
-                backgroundSize: '40px 40px',
-                opacity: 0.1
-              }}></div>
+            <div className="relative mb-12 overflow-hidden rounded-2xl bg-black">
               <div className="relative z-10 p-8 sm:p-12 lg:p-16">
-                <div className="max-w-4xl">
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-4 leading-tight">
-                    CAA OFFICER PORTAL
-                  </h1>
-                  <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-2xl">
-                    Review and approve license applications with regulatory compliance oversight.
-                  </p>
-                  <p className="text-base text-gray-400 mb-8 max-w-2xl">
-                    Manage license approvals, monitor compliance, and ensure safe drone operations across Pakistan.
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <Link href="/licenses?status=pending">
-                      <Button className="border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
-                        Review Pending Applications
-                      </Button>
-                    </Link>
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+                  <div className="max-w-2xl flex-1 text-center lg:text-left">
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-4 leading-tight">
+                      CAA OFFICER PORTAL
+                    </h1>
+                    <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-2xl mx-auto lg:mx-0">
+                      Review and approve license applications with regulatory compliance oversight.
+                    </p>
+                    <p className="text-base text-gray-400 mb-8 max-w-2xl mx-auto lg:mx-0">
+                      Manage license approvals, monitor compliance, and ensure safe drone operations across Pakistan.
+                    </p>
+                    <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                      <Link href="/licenses?status=pending">
+                        <Button className="border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300">
+                          Review Pending Applications
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
+                  
+                  {/* Operator Drone GIF */}
+                  <OperatorDroneView />
                 </div>
               </div>
             </div>
@@ -567,24 +555,23 @@ export default function DashboardPage() {
         return (
           <>
             {/* Hero Section */}
-            <div className="relative mb-12 overflow-hidden rounded-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-gray-900/80 to-black/90"></div>
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(circle at 2px 2px, #3b82f6 1px, transparent 0)',
-                backgroundSize: '40px 40px',
-                opacity: 0.1
-              }}></div>
+            <div className="relative mb-12 overflow-hidden rounded-2xl bg-black">
               <div className="relative z-10 p-8 sm:p-12 lg:p-16">
-                <div className="max-w-4xl">
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-4 leading-tight">
-                    DMS ECOSYSTEM
-                  </h1>
-                  <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-2xl">
-                    Welcome to the Pakistan Drone Management System.
-                  </p>
-                  <p className="text-base text-gray-400 mb-8 max-w-2xl">
-                    Use the navigation menu to access features available for your role.
-                  </p>
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+                  <div className="max-w-2xl flex-1 text-center lg:text-left">
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-4 leading-tight">
+                      DMS ECOSYSTEM
+                    </h1>
+                    <p className="text-xl sm:text-2xl text-gray-300 mb-6 max-w-2xl mx-auto lg:mx-0">
+                      Welcome to the Pakistan Drone Management System.
+                    </p>
+                    <p className="text-base text-gray-400 mb-8 max-w-2xl mx-auto lg:mx-0">
+                      Use the navigation menu to access features available for your role.
+                    </p>
+                  </div>
+                  
+                  {/* Operator Drone GIF */}
+                  <OperatorDroneView />
                 </div>
               </div>
             </div>

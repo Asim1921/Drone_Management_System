@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes';
 import licenseRoutes from './routes/licenseRoutes';
 import operatorRoutes from './routes/operatorRoutes';
 import vendorRoutes from './routes/vendorRoutes';
+import flightRoutes from './routes/flightRoutes';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/licenses', licenseRoutes);
 app.use('/api/operators', operatorRoutes);
 app.use('/api/vendors', vendorRoutes);
+app.use('/api/flights', flightRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

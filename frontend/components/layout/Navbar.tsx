@@ -12,6 +12,7 @@ import {
   IconBuildingStore,
   IconLogout,
   IconUser,
+  IconPlane,
 } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
 
@@ -45,6 +46,12 @@ export const Navbar: React.FC = () => {
         label: 'Vendors',
         icon: <IconBuildingStore className="w-full h-full" />,
         roles: ['admin', 'caa_officer', 'vendor'],
+      },
+      {
+        href: '/flights',
+        label: 'Flights',
+        icon: <IconPlane className="w-full h-full" />,
+        roles: ['admin', 'caa_officer', 'operator'],
       },
     ];
 

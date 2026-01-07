@@ -154,3 +154,49 @@ export interface DroneModel {
   updatedAt: string;
 }
 
+export type FlightStatus = 'pending' | 'approved' | 'rejected' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface Flight {
+  _id: string;
+  operatorId: string | User;
+  licenseId: string | License;
+  flightDetails: {
+    purpose: string;
+    scheduledDate: string;
+    scheduledStartTime: string;
+    scheduledEndTime: string;
+    estimatedDuration: number;
+    maxAltitude: number;
+    flightArea: {
+      center: {
+        latitude: number;
+        longitude: number;
+      };
+      radius: number;
+      address?: string;
+    };
+    weatherConditions?: string;
+    notes?: string;
+  };
+  status: FlightStatus;
+  approvedBy?: string | User;
+  approvedAt?: string;
+  rejectedBy?: string | User;
+  rejectedAt?: string;
+  rejectionReason?: string;
+  actualFlightData?: {
+    startTime?: string;
+    endTime?: string;
+    actualDuration?: number;
+    actualMaxAltitude?: number;
+    flightPath?: Array<{
+      latitude: number;
+      longitude: number;
+      altitude: number;
+      timestamp: string;
+    }>;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+

@@ -23,6 +23,35 @@ body {
   color: var(--foreground);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
+  cursor: default;
+}
+
+/* Prevent text cursor on non-text elements */
+div, section, article, main, aside, header, footer, nav {
+  cursor: default;
+}
+
+/* Allow text selection in content areas but with default cursor */
+p, span, h1, h2, h3, h4, h5, h6, li, td, th {
+  cursor: default;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* Allow text selection and text cursor in input fields and text areas */
+input, textarea, [contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  cursor: text;
+}
+
+/* Buttons and links should have pointer cursor */
+button, a, [role="button"] {
+  cursor: pointer;
 }
 
 /* Dotted Pattern Background */
@@ -85,4 +114,22 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out forwards;
   opacity: 0;
+}
+
+/* 3D Flip Card Styles */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
 }

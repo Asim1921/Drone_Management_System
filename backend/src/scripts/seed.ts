@@ -5,6 +5,7 @@ import { License } from '../models/License';
 import { Operator } from '../models/Operator';
 import { Vendor } from '../models/Vendor';
 import { DroneModel } from '../models/DroneModel';
+import { Flight } from '../models/Flight';
 import { connectDB } from '../config/database';
 const bcrypt = require('bcryptjs');
 
@@ -124,13 +125,14 @@ const seedDatabase = async () => {
     await connectDB();
     console.log('Connected to database');
 
-    // Clear existing data
+    // Clear existing data - IMPORTANT: Delete in order to respect foreign key constraints
     console.log('Clearing existing data...');
-    await User.deleteMany({});
+    await Flight.deleteMany({});
     await License.deleteMany({});
     await Operator.deleteMany({});
     await Vendor.deleteMany({});
     await DroneModel.deleteMany({});
+    await User.deleteMany({});
 
     // Create users
     console.log('Creating users...');
@@ -549,6 +551,282 @@ const seedDatabase = async () => {
     }
 
     console.log(`Created ${licenses.length} licenses`);
+
+    // Create flights
+    console.log('Creating flights...');
+    const flights = [];
+    const approvedLicenses = licenses.filter(l => l.status === 'approved');
+    const operator1User = users.find(u => u.email === 'operator1@dms.gov.pk');
+    const operator2User = users.find(u => u.email === 'operator2@dms.gov.pk');
+    const caaOfficer = users.find(u => u.role === 'caa_officer');
+    const admin = users.find(u => u.role === 'admin');
+
+    // Pakistan locations with coordinates
+    const pakistanLocations = [
+      { name: 'Karachi', lat: 24.8607, lng: 67.0011, address: 'Karachi, Sindh, Pakistan' },
+      { name: 'Lahore', lat: 31.5204, lng: 74.3587, address: 'Lahore, Punjab, Pakistan' },
+      { name: 'Islamabad', lat: 33.6844, lng: 73.0479, address: 'Islamabad, Capital Territory, Pakistan' },
+      { name: 'Rawalpindi', lat: 33.5651, lng: 73.0169, address: 'Rawalpindi, Punjab, Pakistan' },
+      { name: 'Faisalabad', lat: 31.4504, lng: 73.1350, address: 'Faisalabad, Punjab, Pakistan' },
+      { name: 'Multan', lat: 30.1575, lng: 71.5249, address: 'Multan, Punjab, Pakistan' },
+      { name: 'Peshawar', lat: 34.0151, lng: 71.5249, address: 'Peshawar, Khyber Pakhtunkhwa, Pakistan' },
+      { name: 'Quetta', lat: 30.1798, lng: 66.9750, address: 'Quetta, Balochistan, Pakistan' },
+      { name: 'Hyderabad', lat: 25.3960, lng: 68.3578, address: 'Hyderabad, Sindh, Pakistan' },
+      { name: 'Gujranwala', lat: 32.1617, lng: 74.1883, address: 'Gujranwala, Punjab, Pakistan' },
+    ];
+
+    const flightPurposes = [
+      'Aerial Photography',
+      'Surveying',
+      'Real Estate Photography',
+      'Event Coverage',
+      'Infrastructure Inspection',
+      'Agricultural Monitoring',
+      'Search and Rescue',
+      'Traffic Monitoring',
+      'Construction Site Survey',
+      'Environmental Monitoring',
+    ];
+
+    // Create pending flights (need approval)
+    for (let i = 0; i < 8; i++) {
+      const license = approvedLicenses[Math.floor(Math.random() * approvedLicenses.length)];
+      const operator = license.operatorId.toString() === operator1User?._id.toString() ? operator1User : operator2User;
+      const location = pakistanLocations[Math.floor(Math.random() * pakistanLocations.length)];
+      const purpose = flightPurposes[Math.floor(Math.random() * flightPurposes.length)];
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() + Math.floor(Math.random() * 30) + 1);
+      const startHour = Math.floor(Math.random() * 8) + 8; // 8 AM to 4 PM
+      const startMinute = Math.floor(Math.random() * 4) * 15; // 0, 15, 30, 45
+      const duration = Math.floor(Math.random() * 60) + 15; // 15 to 75 minutes
+      const endHour = startHour + Math.floor(duration / 60);
+      const endMinute = (startMinute + (duration % 60)) % 60;
+
+      const flight = await Flight.create({
+        operatorId: operator?._id,
+        licenseId: license._id,
+        flightDetails: {
+          purpose,
+          scheduledDate,
+          scheduledStartTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          scheduledEndTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+          estimatedDuration: duration,
+          maxAltitude: Math.floor(Math.random() * 200) + 50, // 50 to 250 meters
+          flightArea: {
+            center: {
+              latitude: location.lat + (Math.random() - 0.5) * 0.1, // Add some variation
+              longitude: location.lng + (Math.random() - 0.5) * 0.1,
+            },
+            radius: Math.floor(Math.random() * 500) + 100, // 100 to 600 meters
+            address: location.address,
+          },
+          weatherConditions: ['Clear', 'Partly Cloudy', 'Sunny', 'Light Wind'][Math.floor(Math.random() * 4)],
+          notes: `Flight scheduled for ${purpose.toLowerCase()} in ${location.name}`,
+        },
+        status: 'pending',
+      });
+      flights.push(flight);
+    }
+
+    // Create approved flights
+    for (let i = 0; i < 6; i++) {
+      const license = approvedLicenses[Math.floor(Math.random() * approvedLicenses.length)];
+      const operator = license.operatorId.toString() === operator1._id.toString() ? operator1User : operator2User;
+      const location = pakistanLocations[Math.floor(Math.random() * pakistanLocations.length)];
+      const purpose = flightPurposes[Math.floor(Math.random() * flightPurposes.length)];
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() + Math.floor(Math.random() * 20) + 1);
+      const startHour = Math.floor(Math.random() * 8) + 8;
+      const startMinute = Math.floor(Math.random() * 4) * 15;
+      const duration = Math.floor(Math.random() * 60) + 15;
+      const endHour = startHour + Math.floor(duration / 60);
+      const endMinute = (startMinute + (duration % 60)) % 60;
+      const approvedAt = new Date();
+      approvedAt.setDate(approvedAt.getDate() - Math.floor(Math.random() * 5));
+
+      const flight = await Flight.create({
+        operatorId: operator?._id,
+        licenseId: license._id,
+        flightDetails: {
+          purpose,
+          scheduledDate,
+          scheduledStartTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          scheduledEndTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+          estimatedDuration: duration,
+          maxAltitude: Math.floor(Math.random() * 200) + 50,
+          flightArea: {
+            center: {
+              latitude: location.lat + (Math.random() - 0.5) * 0.1,
+              longitude: location.lng + (Math.random() - 0.5) * 0.1,
+            },
+            radius: Math.floor(Math.random() * 500) + 100,
+            address: location.address,
+          },
+          weatherConditions: ['Clear', 'Partly Cloudy', 'Sunny'][Math.floor(Math.random() * 3)],
+          notes: `Approved flight for ${purpose.toLowerCase()} in ${location.name}`,
+        },
+        status: 'approved',
+        approvedBy: i % 2 === 0 ? caaOfficer?._id : admin?._id,
+        approvedAt,
+      });
+      flights.push(flight);
+    }
+
+    // Create in_progress flights
+    for (let i = 0; i < 2; i++) {
+      const license = approvedLicenses[Math.floor(Math.random() * approvedLicenses.length)];
+      const operator = license.operatorId.toString() === operator1._id.toString() ? operator1User : operator2User;
+      const location = pakistanLocations[Math.floor(Math.random() * pakistanLocations.length)];
+      const purpose = flightPurposes[Math.floor(Math.random() * flightPurposes.length)];
+      const scheduledDate = new Date();
+      const startHour = Math.floor(Math.random() * 8) + 8;
+      const startMinute = Math.floor(Math.random() * 4) * 15;
+      const duration = Math.floor(Math.random() * 60) + 15;
+      const endHour = startHour + Math.floor(duration / 60);
+      const endMinute = (startMinute + (duration % 60)) % 60;
+      const approvedAt = new Date();
+      approvedAt.setDate(approvedAt.getDate() - 1);
+      const startTime = new Date();
+      startTime.setHours(startHour, startMinute, 0, 0);
+
+      const flight = await Flight.create({
+        operatorId: operator?._id,
+        licenseId: license._id,
+        flightDetails: {
+          purpose,
+          scheduledDate,
+          scheduledStartTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          scheduledEndTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+          estimatedDuration: duration,
+          maxAltitude: Math.floor(Math.random() * 200) + 50,
+          flightArea: {
+            center: {
+              latitude: location.lat + (Math.random() - 0.5) * 0.1,
+              longitude: location.lng + (Math.random() - 0.5) * 0.1,
+            },
+            radius: Math.floor(Math.random() * 500) + 100,
+            address: location.address,
+          },
+          weatherConditions: 'Clear',
+          notes: `Active flight for ${purpose.toLowerCase()} in ${location.name}`,
+        },
+        status: 'in_progress',
+        approvedBy: caaOfficer?._id,
+        approvedAt,
+        actualFlightData: {
+          startTime,
+        },
+      });
+      flights.push(flight);
+    }
+
+    // Create completed flights
+    for (let i = 0; i < 5; i++) {
+      const license = approvedLicenses[Math.floor(Math.random() * approvedLicenses.length)];
+      const operator = license.operatorId.toString() === operator1._id.toString() ? operator1User : operator2User;
+      const location = pakistanLocations[Math.floor(Math.random() * pakistanLocations.length)];
+      const purpose = flightPurposes[Math.floor(Math.random() * flightPurposes.length)];
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() - Math.floor(Math.random() * 30) - 1);
+      const startHour = Math.floor(Math.random() * 8) + 8;
+      const startMinute = Math.floor(Math.random() * 4) * 15;
+      const duration = Math.floor(Math.random() * 60) + 15;
+      const endHour = startHour + Math.floor(duration / 60);
+      const endMinute = (startMinute + (duration % 60)) % 60;
+      const approvedAt = new Date(scheduledDate);
+      approvedAt.setDate(approvedAt.getDate() - 2);
+      const startTime = new Date(scheduledDate);
+      startTime.setHours(startHour, startMinute, 0, 0);
+      const endTime = new Date(startTime);
+      endTime.setMinutes(endTime.getMinutes() + duration);
+
+      const flight = await Flight.create({
+        operatorId: operator?._id,
+        licenseId: license._id,
+        flightDetails: {
+          purpose,
+          scheduledDate,
+          scheduledStartTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          scheduledEndTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+          estimatedDuration: duration,
+          maxAltitude: Math.floor(Math.random() * 200) + 50,
+          flightArea: {
+            center: {
+              latitude: location.lat + (Math.random() - 0.5) * 0.1,
+              longitude: location.lng + (Math.random() - 0.5) * 0.1,
+            },
+            radius: Math.floor(Math.random() * 500) + 100,
+            address: location.address,
+          },
+          weatherConditions: ['Clear', 'Partly Cloudy'][Math.floor(Math.random() * 2)],
+          notes: `Completed flight for ${purpose.toLowerCase()} in ${location.name}`,
+        },
+        status: 'completed',
+        approvedBy: caaOfficer?._id,
+        approvedAt,
+        actualFlightData: {
+          startTime,
+          endTime,
+          actualDuration: duration + Math.floor(Math.random() * 10) - 5, // ±5 minutes variation
+          actualMaxAltitude: Math.floor(Math.random() * 200) + 50,
+        },
+      });
+      flights.push(flight);
+    }
+
+    // Create rejected flights
+    for (let i = 0; i < 3; i++) {
+      const license = approvedLicenses[Math.floor(Math.random() * approvedLicenses.length)];
+      const operator = license.operatorId.toString() === operator1._id.toString() ? operator1User : operator2User;
+      const location = pakistanLocations[Math.floor(Math.random() * pakistanLocations.length)];
+      const purpose = flightPurposes[Math.floor(Math.random() * flightPurposes.length)];
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() + Math.floor(Math.random() * 20) + 1);
+      const startHour = Math.floor(Math.random() * 8) + 8;
+      const startMinute = Math.floor(Math.random() * 4) * 15;
+      const duration = Math.floor(Math.random() * 60) + 15;
+      const endHour = startHour + Math.floor(duration / 60);
+      const endMinute = (startMinute + (duration % 60)) % 60;
+      const rejectedAt = new Date();
+      rejectedAt.setDate(rejectedAt.getDate() - Math.floor(Math.random() * 5));
+      const rejectionReasons = [
+        'Flight area too close to restricted zone',
+        'Insufficient documentation',
+        'Weather conditions not suitable',
+        'Altitude exceeds license limitations',
+        'Flight purpose not aligned with license type',
+      ];
+
+      const flight = await Flight.create({
+        operatorId: operator?._id,
+        licenseId: license._id,
+        flightDetails: {
+          purpose,
+          scheduledDate,
+          scheduledStartTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+          scheduledEndTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+          estimatedDuration: duration,
+          maxAltitude: Math.floor(Math.random() * 200) + 50,
+          flightArea: {
+            center: {
+              latitude: location.lat + (Math.random() - 0.5) * 0.1,
+              longitude: location.lng + (Math.random() - 0.5) * 0.1,
+            },
+            radius: Math.floor(Math.random() * 500) + 100,
+            address: location.address,
+          },
+          weatherConditions: 'Partly Cloudy',
+          notes: `Rejected flight request for ${purpose.toLowerCase()} in ${location.name}`,
+        },
+        status: 'rejected',
+        rejectedBy: i % 2 === 0 ? caaOfficer?._id : admin?._id,
+        rejectedAt,
+        rejectionReason: rejectionReasons[Math.floor(Math.random() * rejectionReasons.length)],
+      });
+      flights.push(flight);
+    }
+
+    console.log(`Created ${flights.length} flights`);
 
     console.log('\n✅ Database seeded successfully!');
     console.log('\nTest Credentials:');
