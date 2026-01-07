@@ -21,7 +21,7 @@ export default function ParticleBackground({ className = '' }: ParticleBackgroun
 
     const loadParticles = async () => {
       // Check if particles.js is already loaded
-      if (window.particlesJS) {
+      if (typeof window.particlesJS === 'function') {
         initializeParticles();
         return;
       }
@@ -31,7 +31,7 @@ export default function ParticleBackground({ className = '' }: ParticleBackgroun
       if (existingScript) {
         // Script already exists, wait for it to load
         const checkInterval = setInterval(() => {
-          if (window.particlesJS) {
+          if (typeof window.particlesJS === 'function') {
             clearInterval(checkInterval);
             initializeParticles();
           }
@@ -52,7 +52,7 @@ export default function ParticleBackground({ className = '' }: ParticleBackgroun
     };
 
     const initializeParticles = () => {
-      if (!containerRef.current || !window.particlesJS) {
+      if (!containerRef.current || typeof window.particlesJS !== 'function') {
         console.warn('Particles.js not available or container not found');
         return;
       }

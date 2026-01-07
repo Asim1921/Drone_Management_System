@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+// @ts-ignore - three.js types are available via @types/three
 import * as THREE from 'three';
 import './LightPillar.css';
 
