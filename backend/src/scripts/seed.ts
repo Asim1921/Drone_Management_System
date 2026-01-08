@@ -458,15 +458,21 @@ const seedDatabase = async () => {
       additionalOperators.push(operator);
     }
 
+    const allOperators = [operator1, operator2, ...additionalOperators];
     console.log(`Created ${await Operator.countDocuments()} operators`);
 
-    // Create licenses
+    // Get admin and CAA officer references (used in licenses and flights)
+    const caaOfficer = users.find(u => u.role === 'caa_officer');
+    const admin = users.find(u => u.role === 'admin');
+
+    // Create licenses - assign to all operators
     console.log('Creating licenses...');
     const licenses = [];
     
-    // Individual licenses
-    for (let i = 0; i < 10; i++) {
-      const operator = i % 2 === 0 ? operator1 : operator2;
+    // Individual licenses - assign to all operators (at least one per operator)
+    for (let i = 0; i < Math.ceil(allOperators.length * 2); i++) {
+      const operator = allOperators[i % allOperators.length];
+      const operatorUserId = operator.userId; // This is the User ID reference
       const droneModel = droneModels[Math.floor(Math.random() * droneModels.length)];
       const manufacturer = droneModelMap.get(droneModel._id.toString()) || 'Unknown';
       const issueDate = new Date();
@@ -474,37 +480,44 @@ const seedDatabase = async () => {
       const expiryDate = new Date(issueDate);
       expiryDate.setFullYear(expiryDate.getFullYear() + 1);
 
+      // First license per operator should be approved, rest can be pending
+      const isApproved = i < allOperators.length || Math.random() > 0.3;
+
       const license = await License.create({
         licenseType: 'individual',
-        operatorId: operator._id,
+        operatorId: operatorUserId,
         droneDetails: {
           model: droneModel.modelName,
-          serialNumber: `${droneModel.serialNumberPrefix}-${Date.now()}-${i}`,
+          serialNumber: `${droneModel.serialNumberPrefix}-IND-${Date.now()}-${i}`,
           manufacturer: manufacturer,
           weight: droneModel.specifications.weight,
           maxAltitude: droneModel.specifications.maxAltitude,
         },
-        status: i < 7 ? 'approved' : 'pending',
+        status: isApproved ? 'approved' : 'pending',
         issueDate,
         expiryDate,
-        approvedBy: i < 7 ? users.find(u => u.role === 'caa_officer')?._id : undefined,
-        approvedAt: i < 7 ? issueDate : undefined,
+        approvedBy: isApproved ? caaOfficer?._id : undefined,
+        approvedAt: isApproved ? issueDate : undefined,
       });
       licenses.push(license);
     }
 
-    // Commercial licenses
-    for (let i = 0; i < 8; i++) {
-      const operator = i % 2 === 0 ? operator1 : operator2;
+    // Commercial licenses - assign to all operators (at least one per operator)
+    for (let i = 0; i < Math.ceil(allOperators.length * 1.5); i++) {
+      const operator = allOperators[i % allOperators.length];
+      const operatorUserId = operator.userId; // This is the User ID reference
       const droneModel = droneModels[Math.floor(Math.random() * droneModels.length)];
       const issueDate = new Date();
       issueDate.setMonth(issueDate.getMonth() - Math.floor(Math.random() * 6));
       const expiryDate = new Date(issueDate);
       expiryDate.setFullYear(expiryDate.getFullYear() + 2);
 
+      // First commercial license per operator should be approved
+      const isApproved = i < allOperators.length || Math.random() > 0.3;
+
       const license = await License.create({
         licenseType: 'commercial',
-        operatorId: operator._id,
+        operatorId: operatorUserId,
         droneDetails: {
           model: droneModel.modelName,
           serialNumber: `${droneModel.serialNumberPrefix}-COM-${Date.now()}-${i}`,
@@ -512,18 +525,19 @@ const seedDatabase = async () => {
           weight: droneModel.specifications.weight,
           maxAltitude: droneModel.specifications.maxAltitude,
         },
-        status: i < 6 ? 'approved' : 'pending',
+        status: isApproved ? 'approved' : 'pending',
         issueDate,
         expiryDate,
-        approvedBy: i < 6 ? users.find(u => u.role === 'caa_officer')?._id : undefined,
-        approvedAt: i < 6 ? issueDate : undefined,
+        approvedBy: isApproved ? caaOfficer?._id : undefined,
+        approvedAt: isApproved ? issueDate : undefined,
       });
       licenses.push(license);
     }
 
-    // Government licenses
-    for (let i = 0; i < 5; i++) {
-      const operator = operator1;
+    // Government licenses - assign to first few operators
+    for (let i = 0; i < Math.min(5, allOperators.length); i++) {
+      const operator = allOperators[i];
+      const operatorUserId = operator.userId; // This is the User ID reference
       const droneModel = droneModels.find(d => d.useCases.includes('government')) || droneModels[0];
       const manufacturer = droneModelMap.get(droneModel._id.toString()) || 'Unknown';
       const issueDate = new Date();
@@ -533,7 +547,7 @@ const seedDatabase = async () => {
 
       const license = await License.create({
         licenseType: 'government',
-        operatorId: operator._id,
+        operatorId: operatorUserId,
         droneDetails: {
           model: droneModel.modelName,
           serialNumber: `${droneModel.serialNumberPrefix}-GOV-${Date.now()}-${i}`,
@@ -550,7 +564,7 @@ const seedDatabase = async () => {
       licenses.push(license);
     }
 
-    console.log(`Created ${licenses.length} licenses`);
+    console.log(`Created ${licenses.length} licenses assigned to ${allOperators.length} operators`);
 
     // Create flights
     console.log('Creating flights...');
@@ -558,8 +572,6 @@ const seedDatabase = async () => {
     const approvedLicenses = licenses.filter(l => l.status === 'approved');
     const operator1User = users.find(u => u.email === 'operator1@dms.gov.pk');
     const operator2User = users.find(u => u.email === 'operator2@dms.gov.pk');
-    const caaOfficer = users.find(u => u.role === 'caa_officer');
-    const admin = users.find(u => u.role === 'admin');
 
     // Pakistan locations with coordinates
     const pakistanLocations = [

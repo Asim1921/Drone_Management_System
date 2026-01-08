@@ -13,6 +13,7 @@ import {
   IconLogout,
   IconUser,
   IconPlane,
+  IconAlertTriangle,
 } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
 
@@ -52,6 +53,12 @@ export const Navbar: React.FC = () => {
         label: 'Flights',
         icon: <IconPlane className="w-full h-full" />,
         roles: ['admin', 'caa_officer', 'operator'],
+      },
+      {
+        href: '/violations',
+        label: 'Fines/Violations',
+        icon: <IconAlertTriangle className="w-full h-full" />,
+        roles: ['admin', 'caa_officer', 'enforcement', 'operator'],
       },
     ];
 

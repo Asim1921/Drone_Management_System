@@ -118,3 +118,29 @@ export const blacklistOperator = async (req: AuthRequest, res: Response): Promis
   }
 };
 
+export const getOperatorByCNIC = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { cnic } = req.query;
+
+    if (!cnic) {
+      res.status(400).json({ message: 'CNIC is required' });
+      return;
+    }
+
+    const operator = await Operator.findOne({
+      'identityInfo.cnic': cnic as string,
+    })
+      .populate('userId', 'email profile')
+      .populate('blacklistStatus.blacklistedBy', 'email profile');
+
+    if (!operator) {
+      res.status(404).json({ message: 'Operator not found with this CNIC' });
+      return;
+    }
+
+    res.json({ operator });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || 'Failed to find operator by CNIC' });
+  }
+};
+

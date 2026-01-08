@@ -5,6 +5,7 @@ import {
   getOperatorById,
   updateOperator,
   blacklistOperator,
+  getOperatorByCNIC,
 } from '../controllers/operatorController';
 import { authenticate } from '../middleware/auth';
 import { authorize } from '../middleware/rbac';
@@ -12,6 +13,7 @@ import { authorize } from '../middleware/rbac';
 const router = Router();
 
 router.post('/', authenticate, registerOperator);
+router.get('/search/cnic', authenticate, getOperatorByCNIC);
 router.get('/', authenticate, getOperators);
 router.get('/:id', authenticate, getOperatorById);
 router.put('/:id', authenticate, updateOperator);
