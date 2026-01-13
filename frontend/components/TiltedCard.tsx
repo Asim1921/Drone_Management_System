@@ -66,11 +66,12 @@ export default function TiltedCard({
     const offsetX = e.clientX - rect.left - rect.width / 2;
     const offsetY = e.clientY - rect.top - rect.height / 2;
 
-    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
-    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+    // Disabled 3D rotation effect
+    // const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
+    // const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
 
-    rotateX.set(rotationX);
-    rotateY.set(rotationY);
+    rotateX.set(0);
+    rotateY.set(0);
 
     x.set(e.clientX - rect.left);
     y.set(e.clientY - rect.top);
@@ -114,8 +115,9 @@ export default function TiltedCard({
         style={{
           width: imageWidth,
           height: imageHeight,
-          rotateX: rotateX as any,
-          rotateY: rotateY as any,
+          // Disabled 3D rotation transforms
+          // rotateX: rotateX as any,
+          // rotateY: rotateY as any,
           scale: scale as any
         }}
       >
