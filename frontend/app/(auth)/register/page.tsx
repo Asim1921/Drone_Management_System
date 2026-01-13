@@ -30,7 +30,7 @@ export default function RegisterPage() {
     firstName: '',
     lastName: '',
     phone: '',
-    twoFactorMethod: 'email' as 'email' | 'sms',
+    twoFactorMethod: 'email' as const,
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,13 +63,6 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true);
-
-    // Validate phone if SMS is selected
-    if (formData.twoFactorMethod === 'sms' && !formData.phone) {
-      setError('Phone number is required for SMS verification');
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const response = await api.post('/auth/register', {
@@ -250,56 +243,14 @@ export default function RegisterPage() {
                         onChange={handleChange}
                       />
                     </div>
-                    
-                    {/* 2FA Method Selection */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wide">
-                        Two-Factor Authentication Method
-                      </label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setFormData({ ...formData, twoFactorMethod: 'email' })}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all duration-300 ${
-                            formData.twoFactorMethod === 'email'
-                              ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-[#3b82f6]'
-                              : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
-                          }`}
-                        >
-                          <div className="flex flex-col items-center gap-2">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <span className="text-xs font-semibold">Email</span>
-                          </div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setFormData({ ...formData, twoFactorMethod: 'sms' })}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all duration-300 ${
-                            formData.twoFactorMethod === 'sms'
-                              ? 'border-[#3b82f6] bg-[#3b82f6]/10 text-[#3b82f6]'
-                              : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:border-gray-600'
-                          }`}
-                        >
-                          <div className="flex flex-col items-center gap-2">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                            <span className="text-xs font-semibold">SMS</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
 
                     <Input
-                      label={`Phone Number ${formData.twoFactorMethod === 'sms' ? '(Required)' : '(Optional)'}`}
+                      label="Phone Number (Optional)"
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="+92XXXXXXXXXX or 03XXXXXXXXX"
-                      required={formData.twoFactorMethod === 'sms'}
                     />
                     <Input
                       label="Password"

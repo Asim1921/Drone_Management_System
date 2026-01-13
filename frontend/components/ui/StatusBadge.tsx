@@ -2,7 +2,7 @@ import React from 'react';
 
 interface StatusBadgeProps {
   status: string;
-  variant?: 'default' | 'license' | 'operator';
+  variant?: 'default' | 'license' | 'operator' | 'violation';
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant = 'default' }) => {
@@ -29,6 +29,19 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant = 'def
           return 'bg-green-500/20 backdrop-blur-sm text-green-300 border border-green-500/50 shadow-lg shadow-green-500/20';
         case 'blacklisted':
           return 'bg-red-500/20 backdrop-blur-sm text-red-300 border border-red-500/50 shadow-lg shadow-red-500/20';
+        default:
+          return 'bg-gray-500/20 backdrop-blur-sm text-gray-300 border border-gray-500/50 shadow-lg shadow-gray-500/20';
+      }
+    }
+
+    if (variant === 'violation') {
+      switch (status.toLowerCase()) {
+        case 'resolved':
+          return 'bg-green-500/20 backdrop-blur-sm text-green-300 border border-green-500/50 shadow-lg shadow-green-500/20';
+        case 'pending':
+          return 'bg-yellow-500/20 backdrop-blur-sm text-yellow-300 border border-yellow-500/50 shadow-lg shadow-yellow-500/20';
+        case 'appealed':
+          return 'bg-blue-500/20 backdrop-blur-sm text-blue-300 border border-blue-500/50 shadow-lg shadow-blue-500/20';
         default:
           return 'bg-gray-500/20 backdrop-blur-sm text-gray-300 border border-gray-500/50 shadow-lg shadow-gray-500/20';
       }
